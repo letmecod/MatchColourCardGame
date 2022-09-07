@@ -95,6 +95,10 @@ function screen_design()
     button.innerHTML="Reload"
     button.classList.add("btn");
     document.body.appendChild(button);
+    button.addEventListener('click', function fun3()
+    {
+      btnclk();
+    });
   
 
 }
