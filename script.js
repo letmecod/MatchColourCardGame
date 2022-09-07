@@ -28,7 +28,7 @@ var count_click_comp; //counting clicks to open card
 var count_click_user; //counting clicks to open card
 var plain_cardopc
 var turn;
-
+var button;
 document.addEventListener("load",deck());
 
 
@@ -41,8 +41,9 @@ function deck() {
     count_click_comp=0;
     count_click_user=0;
     turn='a';
+    commanstack=[];
 
-     values = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+    values = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
     suits = ["Hearts", "Diamonds", "Spades", "Clubs"];
     
     for (let st = 0; st < suits.length; st++) {
@@ -58,17 +59,17 @@ function deck() {
   
 function screen_design()
 {  
-     back_comp=document.createElement("div");
+    back_comp=document.createElement("div");
     back_comp.classList.add("backcard_comp");
     back_comp.innerHTML="my cards"
     document.body.appendChild(back_comp);
 
-     back_user=document.createElement("div");
+    back_user=document.createElement("div");
     back_user.classList.add("backcard_user");
-    back_user.innerHTML="Click Me"
+    back_user.innerHTML="Your cards"
     document.body.appendChild(back_user);
 
-     display_comp=document.createElement("div");
+    display_comp=document.createElement("div");
 
     plain_card=document.createElement("div");
     plain_card.classList.add("plaincard");
@@ -79,7 +80,7 @@ function screen_design()
      division=document.createElement("div");
      card1 = document.createElement("div");
 
-     scoreboard_comp=document.createElement("label");
+    scoreboard_comp=document.createElement("label");
     scoreboard_comp.innerHTML="Score: "+score_comp;
     scoreboard_comp.classList.add("scorec");
     document.body.appendChild(scoreboard_comp);
@@ -88,7 +89,21 @@ function screen_design()
     scoreboard_user.innerHTML="Score: "+ score_user;
     scoreboard_user.classList.add("scoreu");
     document.body.appendChild(scoreboard_user);
+
+    button=document.createElement("button");
+    button.type="button"
+    button.innerHTML="Reload"
+    button.classList.add("btn");
+    document.body.appendChild(button);
+  
+
 }
+
+function btnclk()
+{
+  location.reload();
+}
+
 
 
     back_user.addEventListener('click', function fun1()
@@ -100,16 +115,31 @@ function screen_design()
     {
       frontCard_comp(cards);
     });
+
+    
   
   function frontCard_user(cards) {
-    if(turn=='c'&& turn!='a')
+    if(turn=='c' && turn!='a')
     {
-      console.log("Hey its not your turn!")
+      alert("Hey! its My turn!")
       return;
 
     }
+    if(count_click_user>=26||count_click_comp>=26)
+    {
+      alert("You are out of moves");
+      if(score_comp>score_user)
+        alert("I win");
+      if(score_comp<score_user)
+        alert("You win");
+      if(score_comp==score_user)
+        alert("we both win");;
+      return;
+    }
     
+
     count_click_user++;
+    
     
 
     if(classaddflaguser==true && cardset.length<=51&&count_click_user<=26)
@@ -173,45 +203,43 @@ function screen_design()
     }
    if(commanstack.length>=1)
    {
-   var temp=commanstack.pop();
-   commanstack.push(temp);
-   commanstack.push(obj);
-   console.log("  commanstack  ",commanstack);
-
-   if(((JSON.stringify(temp)).match("Spades"))||(JSON.stringify(temp)).match("Clubs"))
-   {
-    if(((JSON.stringify(obj)).match("Spades"))||(JSON.stringify(obj)).match("Clubs"))
+    var temp=commanstack.pop();
+    commanstack.push(temp);
+    commanstack.push(obj);
+    
+    if(((JSON.stringify(temp)).match("Spades"))||(JSON.stringify(temp)).match("Clubs"))
     {
-      if(player=='u')
+     if(((JSON.stringify(obj)).match("Spades"))||(JSON.stringify(obj)).match("Clubs"))
       {
-        console.log("match black-black user")
-        score_user=commanstack.length+score_user;
-        commanstack=[]; 
-        //card.classList.remove("card",cardSuit.toLowerCase());
-        plain_cardopc.innerHTML="You got points"
-        document.body.appendChild(plain_cardopc);
-        
-        console.log("  commanstack  ",commanstack);
-        scoreboard_user.innerHTML="Score: "+score_user;
-        return;
-      }
-      if(player=='c')
-      {
-        console.log("match black-black comp")
-        score_comp=commanstack.length + score_comp;
-        commanstack=[];
-        plain_cardopc.innerHTML="I got points"
+        if(player=='u')
+        {
 
-        //card.classList.remove("card",cardSuit.toLowerCase());
-        document.body.appendChild(plain_cardopc);
+          console.log("match black-black user score for this move is ",commanstack.length);
+          console.log("previous score is ",score_user);
+          score_user=commanstack.length+score_user;
+          commanstack=[]; 
+          //card.classList.remove("card",cardSuit.toLowerCase());
+          plain_cardopc.innerHTML="You got points"
+          document.body.appendChild(plain_cardopc);
+          scoreboard_user.innerHTML="Score: "+score_user;
+          return;
+        }
+        if(player=='c')
+        {
+          console.log("match black-black comp score for this move is ",commanstack.length);
+          console.log("previous score is ",score_comp);
+
+          score_comp=commanstack.length + score_comp;
+          commanstack=[];
+          plain_cardopc.innerHTML="I got points"
+
+          //card.classList.remove("card",cardSuit.toLowerCase());
+          document.body.appendChild(plain_cardopc);
           
-        
-        console.log("  commanstack  ",commanstack);
-
-        scoreboard_comp.innerHTML="Score: "+score_comp;
-        return;
-      }
-    }  
+          scoreboard_comp.innerHTML="Score: "+score_comp;
+          return;
+        }
+      }  
     }
    }
    if(((JSON.stringify(temp)).match("Diamonds"))||(JSON.stringify(temp)).match("Hearts"))
@@ -220,24 +248,30 @@ function screen_design()
     {
       if(player=='u')
       {
-        console.log("match red-red user")
+        console.log("match red-red user score for this move is ",commanstack.length);
+        console.log("previous score is ",score_user);
+
         score_user=commanstack.length+score_user; 
         commanstack=[];
         //card.classList.remove("card",cardSuit.toLowerCase());
         plain_cardopc.innerHTML="You got points"
         document.body.appendChild(plain_cardopc);
         
+        
         scoreboard_user.innerHTML="Score: "+score_user;
         return;
       }
       if(player=='c')
       {
-        console.log("match red-red comp")
+        console.log("match red-red comp score for this move is ",commanstack.length);
+        console.log("previous score is ",score_comp);
+
         score_comp=commanstack.length + score_comp; 
         commanstack=[];
         //card.classList.remove("card",cardSuit.toLowerCase());
         plain_cardopc.innerHTML="I got points"
         document.body.appendChild(plain_cardopc);
+      
         
         scoreboard_comp.innerHTML="Score: "+score_comp;
         return;
@@ -250,7 +284,7 @@ function screen_design()
       }
       if(player=='c')
       {
-        scoreboard_user.innerHTML="Score: "+score_comp;
+        scoreboard_comp.innerHTML="Score: "+score_comp;
         return ;
       }
     
@@ -260,15 +294,30 @@ function screen_design()
 
 
   function frontCard_comp(cards) {
+
+    if(count_click_user>=26||count_click_comp>=26)
+    {
+      alert("You are out of moves");
+      if(score_comp>score_user)
+        alert("I win");
+      if(score_comp<score_user)
+        alert("You win");
+      if(score_comp==score_user)
+        alert("we both win");;
+      return;
+
+    }
+
     if(turn=='u'&& turn!='a')
     {
-      console.log("Hey its not my turn!")
+      alert("Hey its not my turn!")
       return;
     }
+    
     count_click_comp++;
     
 
-    if(classaddflagcomp==true && cardset.length<=51 && count_click_comp<=26)
+    if(classaddflagcomp==true && cardset.length<=51 && count_click_comp<=26 )
     {
       card.classList.remove("card",cardSuit.toLowerCase());
       document.body.appendChild(plain_card);
